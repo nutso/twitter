@@ -18,6 +18,9 @@ class UserHistoryItem(scrapy.Item):
     language = scrapy.Field()
     url = scrapy.Field()
     media = scrapy.Field()
+    retweet_of = scrapy.Field() # UserHistoryItem as well
+    hashtags = scrapy.Field()
+    links = scrapy.Field()
     
     user_handle = scrapy.Field()
     user_display_name = scrapy.Field()
