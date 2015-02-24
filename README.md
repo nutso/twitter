@@ -17,3 +17,5 @@ Tweets are returned as best approximating the Twitter tweet format (ref: https:/
 Additional fields include:
 * created_at_ts: UTC timestamp corresponding to the created_at field
 * entities item contains pure array lists of the correpsonding entity, without additional information (i.e. tweet.entities.hashtags is an array of hashtag terms only)
+* date_scraped: date and time when the record was scraped ("now")
+* url: actual url from which the record was scraped
