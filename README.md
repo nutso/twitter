@@ -5,7 +5,8 @@ Requirements:
 * Scrapy
 * BeautifulSoup4
 
-Usage:
-change to the user_history directory
+Usage: change to the user_history directory and run:
+
 scrapy crawl user_history_spider -o scraped_data.json -a handle=BarackObama
-replace "BarackObama" with the Twitter user handle of interest
+
+(replace "BarackObama" with the Twitter user handle of interest)
