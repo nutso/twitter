@@ -45,51 +45,53 @@ class UserHistorySpiderSpider(scrapy.Spider):
         primary_tweet = response.css(".permalink-tweet-container")
 
         # Core Tweet Info
-        item['id'] = primary_tweet.css("div.tweet::attr(data-tweet-id)").extract()[0]
+        item['id_str'] = primary_tweet.css("div.tweet::attr(data-tweet-id)").extract()[0]
         item['text'] = self.strip_html(primary_tweet.css("p.tweet-text").extract()[0]) # strip HTML
-        item['language'] = primary_tweet.css("p.tweet-text::attr(lang)").extract()[0]
-        item['created_at'] = primary_tweet.css(".js-short-timestamp::attr(data-time)").extract()[0] # UTC timestamp
+        item['lang'] = primary_tweet.css("p.tweet-text::attr(lang)").extract()[0]
+        item['created_at_ts'] = primary_tweet.css(".js-short-timestamp::attr(data-time)").extract()[0] # UTC timestamp
+        # TODO fill in created_at with the right format
 
         # TODO photos
         
-        item['hashtags'] = []
+        item['entities'] = {}
+        item['entities']['hashtags'] = [] # TODO only create array if there is at least one item
         for h in primary_tweet.css("a.twitter-hashtag b"):
-            item['hashtags'].append(self.strip_html(h.extract()))
+            item['entities']['hashtags'].append(self.strip_html(h.extract()))
 
-        item['links'] = []
+        item['entities']['links'] = [] # TODO only create array if there is at least one item
         for l in primary_tweet.css("a.twitter-timeline-link::attr(data-expanded-url)"):
-            item['links'].append(l.extract())
+            item['entities']['links'].append(l.extract())
 
         # User Info
-        item['user_handle'] = primary_tweet.css("div.tweet::attr(data-screen-name)").extract()[0]
-        item['user_display_name'] = primary_tweet.css("div.tweet::attr(data-name)").extract()[0]
-        item['user_id'] = primary_tweet.css("div.tweet::attr(data-user-id)").extract()[0]
-        item['user_profile_url'] = primary_tweet.css(".permalink-header img.avatar::attr(src)").extract()[0]
+        item['user'] = {}
+        item['user']['screen_name'] = primary_tweet.css("div.tweet::attr(data-screen-name)").extract()[0]
+        item['user']['name'] = primary_tweet.css("div.tweet::attr(data-name)").extract()[0]
+        item['user']['id_str'] = primary_tweet.css("div.tweet::attr(data-user-id)").extract()[0]
+        item['user']['profile_image_url'] = primary_tweet.css(".permalink-header img.avatar::attr(src)").extract()[0]
         
         # Stats
         retweets = primary_tweet.css("li.js-stat-retweets a::attr(data-tweet-stat-count)").extract()
         if retweets:
-            item['retweets'] = retweets[0]
+            item['retweet_count'] = retweets[0]
         else:
-            item['retweets'] = 0
+            item['retweet_count'] = 0
         
         favorites = primary_tweet.css("li.js-stat-favorites a::attr(data-tweet-stat-count)").extract()
         if favorites:
-            item['favorites'] = favorites[0]
+            item['favorite_count'] = favorites[0]
         else:
-            item['favorites'] = 0
-        
-        # TODO stars ?
+            item['favorite_count'] = 0
         
         # compare user_handle to self.username to determine if retweet
         # retweet-specific information is not apparently available via the site ... at least not without iterating over all the retweets
-        if(item['user_handle'] != self.username):
+        if(item['user']['screen_name'] != self.username):
             # retweet
             retweet = UserHistoryItem()
             retweet['date_scraped'] = item['date_scraped']
             retweet['url'] = item['url']
-            retweet['user_handle'] = self.username
-            retweet['retweet_of'] = item
+            retweet['user'] = {}
+            retweet['user']['screen_name'] = self.username
+            retweet['retweeted_status'] = item
             return retweet
         else:
             return item

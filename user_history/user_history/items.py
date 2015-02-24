@@ -9,24 +9,18 @@ import scrapy
 
 
 class UserHistoryItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
     date_scraped = scrapy.Field()
-    
-    id = scrapy.Field()
-    text = scrapy.Field()
-    language = scrapy.Field()
     url = scrapy.Field()
-    media = scrapy.Field()
-    retweet_of = scrapy.Field() # UserHistoryItem as well
-    hashtags = scrapy.Field()
-    links = scrapy.Field()
     
-    user_handle = scrapy.Field()
-    user_display_name = scrapy.Field()
-    user_id = scrapy.Field()
-    user_profile_url = scrapy.Field()
+    id_str = scrapy.Field()
+    text = scrapy.Field()
+    lang = scrapy.Field()
+    entities = scrapy.Field()
+    retweeted_status = scrapy.Field() # UserHistoryItem as well
     
-    retweets = scrapy.Field()
-    favorites = scrapy.Field()
+    user = scrapy.Field()
+    
+    retweet_count = scrapy.Field()
+    favorite_count = scrapy.Field()
     created_at= scrapy.Field()
+    created_at_ts = scrapy.Field()
