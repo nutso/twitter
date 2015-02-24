@@ -34,6 +34,9 @@ class UserHistorySpiderSpider(scrapy.Spider):
 
     def strip_html(self, text):
         return BeautifulSoup(text).getText()
+    
+    def ts_to_twitter_date(self, ts):
+        return datetime.fromtimestamp(ts).strftime("%a %b %d %H:%M:%S +0000 %Y")
        
     # parse a single tweet detail page
     def parse_tweet(self, response):
@@ -48,8 +51,8 @@ class UserHistorySpiderSpider(scrapy.Spider):
         item['id_str'] = primary_tweet.css("div.tweet::attr(data-tweet-id)").extract()[0]
         item['text'] = self.strip_html(primary_tweet.css("p.tweet-text").extract()[0]) # strip HTML
         item['lang'] = primary_tweet.css("p.tweet-text::attr(lang)").extract()[0]
-        item['created_at_ts'] = primary_tweet.css(".js-short-timestamp::attr(data-time)").extract()[0] # UTC timestamp
-        # TODO fill in created_at with the right format
+        item['created_at_ts'] = int(primary_tweet.css(".js-short-timestamp::attr(data-time)").extract()[0]) # UTC timestamp
+        item['created_at'] = self.ts_to_twitter_date(item['created_at_ts'])
 
         # TODO photos
         
